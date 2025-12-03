@@ -1,0 +1,25 @@
+# Build artifacts
+build/
+*.o
+*.exe
+*.log
+
+# Save files
+saves/*.bin
+saves/*.db
+
+# Cursor AI files (keep local, never commit)
+.cursor/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+test_unicode
+test_unicode.cpp
+
