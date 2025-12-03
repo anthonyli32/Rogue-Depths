@@ -2,7 +2,7 @@
 
 All notable changes to Rogue Depths will be documented in this file.
 
-## [1.0.0] - 2024-12-XX
+## [1.0.0] - 2024-12-19
 
 ### Added
 - First public release of Rogue Depths
