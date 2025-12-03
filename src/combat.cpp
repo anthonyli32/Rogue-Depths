@@ -739,8 +739,8 @@ namespace combat {
                         log.add(MessageType::Combat, glyphs::weapon() + std::string(" MAGIC SWORD! A sword flies through the air and strikes for ") + 
                                 std::to_string(finalDamage) + " damage!");
                     } else {
-                        target.apply_status({StatusType::Burn, 3, 1});
-                        log.add(MessageType::Combat, "FIREBALL! " + std::to_string(finalDamage) + " fire damage (burn applied)!");
+                    target.apply_status({StatusType::Burn, 3, 1});
+                    log.add(MessageType::Combat, "FIREBALL! " + std::to_string(finalDamage) + " fire damage (burn applied)!");
                     }
                 }
 
@@ -765,8 +765,8 @@ namespace combat {
                                 std::to_string(finalDamage) + " damage!");
                     } else {
                         // Basic Frost Bolt (shouldn't happen via FROST_BOLT action, but keep for safety)
-                        target.apply_status({StatusType::Freeze, 1, 0});
-                        log.add(MessageType::Combat, "FROST BOLT! " + std::to_string(finalDamage) + " damage! Enemy frozen!");
+                    target.apply_status({StatusType::Freeze, 1, 0});
+                    log.add(MessageType::Combat, "FROST BOLT! " + std::to_string(finalDamage) + " damage! Enemy frozen!");
                     }
                 }
 
@@ -1173,7 +1173,7 @@ namespace combat {
             (player.get_equipment().find(EquipmentSlot::Weapon) != player.get_equipment().end() ||
              player.get_equipment().find(EquipmentSlot::Offhand) != player.get_equipment().end()));
         if (isMageWithWeapon) {
-            print_category("Magic", kCategoryMagic);
+        print_category("Magic", kCategoryMagic);
         }
         print_category("Defense", kCategoryDefense);
         print_category("Utility", kCategoryUtility);

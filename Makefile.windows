@@ -1,0 +1,35 @@
+# Windows cross-compilation Makefile
+CXX := x86_64-w64-mingw32-g++
+CC := x86_64-w64-mingw32-gcc
+CXXFLAGS := -std=c++17 -O2 -Wall -Wextra -Wpedantic
+CFLAGS := -O2 -Wall -DSQLITE_THREADSAFE=0 -DSQLITE_OMIT_LOAD_EXTENSION
+SRC_DIR := src
+LIB_DIR := lib
+OBJ_DIR := build/obj
+BIN_DIR := build/bin
+TARGET := $(BIN_DIR)/rogue_depths.exe
+
+SRCS := $(wildcard $(SRC_DIR)/*.cpp)
+OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRCS))
+SQLITE_OBJ := $(OBJ_DIR)/sqlite3.o
+INCLUDES := -I$(SRC_DIR) -I$(LIB_DIR)
+
+.PHONY: all clean dirs
+
+all: dirs $(TARGET)
+
+dirs:
+	mkdir -p $(OBJ_DIR) $(BIN_DIR) assets/ascii saves config
+
+$(TARGET): $(OBJS) $(SQLITE_OBJ)
+	$(CXX) $(CXXFLAGS) $(OBJS) $(SQLITE_OBJ) -o $@ -static-libgcc -static-libstdc++ -lpthread -lws2_32
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+$(SQLITE_OBJ): $(LIB_DIR)/sqlite3.c
+	$(CC) $(CFLAGS) -DSQLITE_OMIT_LOAD_EXTENSION -DSQLITE_THREADSAFE=0 -DSQLITE_USE_URI=0 -c $< -o $@
+
+clean:
+	$(RM) -r $(OBJ_DIR) $(BIN_DIR)
+

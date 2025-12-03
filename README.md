@@ -16,17 +16,17 @@ A tactical ASCII dungeon crawler with Pokemon-style combat, dual wielding, and a
 
 ## Quick Start Guide
 
-1. **Download**: Grab the latest `RogueDepths_v1.0_Windows.zip` from the [Releases](https://github.com/AnthonyLi-re/Rogue-Depths/releases) page.
-2. **Extract**: Unzip and keep the folder structure (`build/bin`, `assets`, `config`, `saves`).
-3. **Launch** (Windows):
-   - Double-click `play_rogue_depths.bat` **or**
-   - Run `build\bin\rogue_depths.exe` in your terminal.
-4. **Recommended terminal setup**:
-   - Use Windows Terminal, full screen (Alt+Enter / F11).
-   - Use a monospaced font; adjust font size until the title frame fits on one screen.
-5. **Start playing**:
-   - Select **New Game**.
-   - Choose **Warrior** if you're new; **Mage** if you like defensive play.
+1. **Build the game** (see [Build and Run](#build-and-run) section below)
+2. **Run the executable**:
+   - Linux/WSL: `./build/bin/rogue_depths`
+   - Windows: `build\bin\rogue_depths.exe` (if built with Makefile.windows)
+3. **Recommended terminal setup**:
+   - Terminal must be at least 260 characters wide
+   - Use full screen (F11) for best experience
+   - Use a monospaced font; adjust font size until the title frame fits on one screen
+4. **Start playing**:
+   - Select **New Game**
+   - Choose **Warrior** if you're new; **Mage** if you like defensive play
 
 ## How to Play
 

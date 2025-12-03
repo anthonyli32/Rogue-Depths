@@ -31,3 +31,9 @@ Thumbs.db
 test_unicode
 test_unicode.cpp
 
+# Release artifacts
+*.zip
+*.dll
+RogueDepths_*.zip
+libwinpthread-*.dll
+

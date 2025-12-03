@@ -191,8 +191,10 @@ input::ViewportSize input::calculate_viewport(int term_width, int term_height) {
     return {vw, vh};
 }
 
-#else
-// Fallbacks for non-POSIX (e.g., Windows dev machines). Blocking input only.
+#elif defined(_WIN32)
+// Windows implementation
+#include <windows.h>
+
 bool input::enable_raw_mode() {
     return true;
 }
@@ -210,7 +212,17 @@ int input::read_key_blocking() {
 }
 
 input::TerminalSize input::get_terminal_size() {
-    // Default fallback for non-POSIX
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (hOut != INVALID_HANDLE_VALUE && GetConsoleScreenBufferInfo(hOut, &csbi)) {
+        // Get window size (visible area), not buffer size
+        int width = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+        int height = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+        if (width > 0 && height > 0) {
+            return {width, height};
+        }
+    }
+    // Fallback to default
     return {80, 24};
 }
 

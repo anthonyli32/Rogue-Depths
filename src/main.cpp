@@ -30,6 +30,19 @@
 #include "tutorial.h"
 #include "viewport.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#include <io.h>
+#include <fcntl.h>
+// Undefine Windows macros that conflict with our code
+#ifdef ERROR
+#undef ERROR
+#endif
+#ifdef FAR
+#undef FAR
+#endif
+#endif
+
 // Delete all save files and signal restart
 static bool delete_all_saves() {
     bool deleted = false;
@@ -908,7 +921,112 @@ static void draw_map(const Dungeon& dungeon, const Player& player, const std::ve
     draw_map_viewport(dungeon, player, enemies, 1, 1, constants::viewport_width, constants::viewport_height);
 }
 
+// Check terminal size and ensure it's large enough for the game
+static void check_terminal_size() {
+    const int MIN_WIDTH = 260;  // Minimum terminal width required
+    
+    while (true) {
+        auto termSize = input::get_terminal_size();
+        
+        if (termSize.width >= MIN_WIDTH) {
+            // Terminal is large enough, proceed
+            break;
+        }
+        
+        // Terminal too small - show warning
+        ui::clear();
+        
+        // Calculate box position (centered)
+        const int boxWidth = MIN_WIDTH;
+        const int boxHeight = 13;
+        auto currentSize = input::get_terminal_size();
+        int boxRow = std::max(2, (currentSize.height - boxHeight) / 2);
+        int boxCol = std::max(2, (currentSize.width - boxWidth) / 2);
+        
+        // Draw box
+        ui::draw_box_double(boxRow, boxCol, boxWidth, boxHeight, constants::color_frame_main);
+        
+        // Title
+        ui::move_cursor(boxRow + 1, boxCol + (boxWidth - 20) / 2);
+        ui::set_color(constants::color_player);
+        std::cout << "⚠ Terminal Too Small ⚠";
+        ui::reset_color();
+        
+        // Message
+        ui::move_cursor(boxRow + 3, boxCol + 2);
+        ui::set_color(constants::color_floor);
+        std::cout << "Your terminal width is " << termSize.width << " characters.";
+        ui::move_cursor(boxRow + 4, boxCol + 2);
+        std::cout << "Rogue Depths requires at least " << MIN_WIDTH << " characters.";
+        ui::reset_color();
+        
+        // Bar of equal size
+        ui::move_cursor(boxRow + 6, boxCol + 1);
+        ui::set_color(constants::color_ui);
+        for (int i = 0; i < boxWidth; ++i) {
+            std::cout << "~";
+        }
+        ui::reset_color();
+        
+        // Instructions
+        ui::move_cursor(boxRow + 8, boxCol + 2);
+        ui::set_color(constants::color_floor);
+        std::cout << "Please resize your terminal window:";
+        ui::move_cursor(boxRow + 9, boxCol + 2);
+        std::cout << "• Go full screen (F11 or maximize window)";
+        ui::move_cursor(boxRow + 10, boxCol + 2);
+        std::cout << "• Press Ctrl + Scroll Down to zoom out";
+        ui::move_cursor(boxRow + 11, boxCol + 2);
+        std::cout << "• Or manually resize the window";
+        ui::move_cursor(boxRow + 12, boxCol + (boxWidth - 25) / 2);
+        ui::set_color(constants::ansi_bold);
+        std::cout << "Press ENTER when ready...";
+        ui::reset_color();
+        
+        std::cout.flush();
+        
+        // Wait for Enter key
+        int key = input::read_key_blocking();
+        if (key == '\n' || key == '\r') {
+            // Check again after Enter
+            continue;
+        }
+    }
+}
+
 int main(int argc, char* argv[]) {
+#ifdef _WIN32
+    // Windows console setup for UTF-8 support
+    SetConsoleOutputCP(65001); // UTF-8 code page
+    SetConsoleCP(65001);       // UTF-8 input code page
+    
+    // Enable virtual terminal processing for ANSI escape sequences
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (hOut != INVALID_HANDLE_VALUE) {
+        DWORD dwMode = 0;
+        if (GetConsoleMode(hOut, &dwMode)) {
+            dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+            SetConsoleMode(hOut, dwMode);
+        }
+    }
+    
+    HANDLE hIn = GetStdHandle(STD_INPUT_HANDLE);
+    if (hIn != INVALID_HANDLE_VALUE) {
+        DWORD dwMode = 0;
+        if (GetConsoleMode(hIn, &dwMode)) {
+            dwMode |= ENABLE_VIRTUAL_TERMINAL_INPUT;
+            SetConsoleMode(hIn, dwMode);
+}
+    }
+#endif
+
+    // Initialize UI and input before checking terminal size
+    ui::init();
+    input::enable_raw_mode();
+    
+    // Check terminal size before proceeding
+    check_terminal_size();
+
     // Parse command-line arguments
     CLIConfig cliConfig = cli::parse(argc, argv);
     cli::set_config(cliConfig);
@@ -948,10 +1066,7 @@ int main(int argc, char* argv[]) {
     
     LOG_INFO("Random seed: " + std::to_string(seed));
 
-    // Init UI
-    ui::init();
-    input::enable_raw_mode();
-
+    // UI and input already initialized earlier for terminal size check
     // Animated title screen with menu (pass seed for display)
     int menuChoice = show_animated_title(seed);
     
@@ -1296,7 +1411,7 @@ int main(int argc, char* argv[]) {
             }
             LOG_OP_END("draw_menu_view");
         }
-
+        
         // Draw contextual tips box (always visible, based on current view and context)
         {
             std::string tipText;
