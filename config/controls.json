@@ -1,0 +1,23 @@
+{
+  "MOVE_UP": ["w", "W"],
+  "MOVE_DOWN": ["s", "S"],
+  "MOVE_LEFT": ["a", "A"],
+  "MOVE_RIGHT": ["d", "D"],
+  "INVENTORY": ["i", "I"],
+  "EQUIP": ["e", "E"],
+  "USE": ["u", "U"],
+  "DROP": ["d", "D"],
+  "HELP": ["?"],
+  "DESCEND": [">"],
+  "ASCEND": ["<"],
+  "QUIT": ["q", "Q"],
+  "TURN_LEFT": ["q", "Q"],
+  "TURN_RIGHT": ["e", "E"],
+  "DEBUG_RESET": ["R"],
+  "DEBUG_SPAWN_ITEMS": ["g", "G"],
+  "DEBUG_SPAWN_ENEMY": ["n", "N"],
+  "TAB_NEXT": ["TAB"],
+  "CONFIRM": ["y", "Y"],
+  "CANCEL": ["n", "N"]
+}
+
